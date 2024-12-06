@@ -1,22 +1,82 @@
 package dk.easv.mytunes.gui.controllers;
 
+import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.Song;
-import dk.easv.mytunes.dal.DBConnection;
+import dk.easv.mytunes.gui.models.PlaylistModel;
 import dk.easv.mytunes.gui.models.SongModel;
 
+import javafx.scene.control.*;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.ListView;
-import javafx.scene.control.Button;
+
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class myTunesController implements Initializable {
 
+    @FXML
+    private Label playingSongName;
+
+    @FXML
+    private ProgressBar songProgress;
+
+    @FXML
+    private Slider volumeSlider;
+
+    @FXML
+    private Button playButton;
+
+    @FXML
+    private Button pauseButton;
+
+    @FXML
+    private Button stopButton;
+
+    @FXML
+    private Button skipBackwardsButton;
+
+    @FXML
+    private Button skipForwardsButton;
+
+    @FXML
+    private ListView<Song> lstSongs;
+
+    @FXML
+    private ListView<Playlist> lstPlaylists;
+
     private MediaPlayer mediaPlayer;
+    private SongModel songModel = new SongModel();
+    private PlaylistModel playlistModel = new PlaylistModel();
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        lstSongs.setItems(songModel.getObservableSongList());
+
+        lstPlaylists.setItems(playlistModel.getObservablePlaylistList());
+
+        lstSongs.setCellFactory(param -> new ListCell<Song>() {
+            @Override
+            protected void updateItem(Song song, boolean empty) {
+                super.updateItem(song, empty);
+                if (song != null) {
+                    setText(song.getTitle());
+                } else {
+                    setText(null);
+                }
+            }
+        });
+        lstSongs.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                playSong(newValue);
+            }
+        });
+        playButton.setOnAction(this::handlePlay);
+        pauseButton.setOnAction(this::handlePause);
+        stopButton.setOnAction(this::handleStop);
+    }
 
     public void play(String filePath) {
         Media media = new Media("file///"+filePath);
@@ -45,42 +105,14 @@ public class myTunesController implements Initializable {
         return mediaPlayer != null && mediaPlayer.getStatus() == MediaPlayer.Status.PLAYING;
     }
 
-    @FXML
-    private ListView<Song> lstSongs;
-
-    private SongModel songModel = new SongModel();
-
-    @FXML
-    private Button playButton;
-
-    @FXML
-    private Button pauseButton;
-
-    @FXML
-    private Button stopButton;
-
-    @FXML
-    public void initialize() {
-        lstSongs.setItems(songModel.getObservableSongList());
-        lstSongs.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                playSong(newSelection);
-            }
-        });
-        playButton.setOnAction(this::handlePlay);
-        pauseButton.setOnAction(this::handlePause);
-        stopButton.setOnAction(this::handleStop);
-    }
-
-    /*
-    @FXML
-    void onLoadSongsClick(ActionEvent event) {lstSongs.setItems(songModel.getObservableSongList());}
-    */
-
     private void handlePlay(ActionEvent event) {
         Song selectedSong = lstSongs.getSelectionModel().getSelectedItem();
         if (selectedSong != null) {
-            playSong(selectedSong);
+            // Simulate playing the song
+            playingSongName.setText("Now Playing: " + selectedSong.getTitle());
+            System.out.println("Playing: " + selectedSong.getTitle()); // OR playSong(selectedSong);
+        } else {
+            playingSongName.setText("No song selected!");
         }
     }
 
@@ -94,10 +126,5 @@ public class myTunesController implements Initializable {
 
     private void playSong(Song song) {
         mediaPlayer.play();
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-
     }
 }

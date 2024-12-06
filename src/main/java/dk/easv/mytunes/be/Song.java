@@ -1,5 +1,6 @@
 package dk.easv.mytunes.be;
 
+// Class Song of the Business Entity (be) package determines the Song characteristics
 public class Song {
     private int id;
     private String title;
@@ -66,5 +67,5 @@ public class Song {
     }
 
     @Override
-    public String toString() {return id + "\t" + title + "\t" + artist_id + "\t" + category + "\t" + duration + "\t" + file_path;}
+    public String toString() {return id + "\t" + title + "\t" + artist_id + "\t" + category + "\t" + "(" + duration + ")" + "\t" + file_path;}
 }

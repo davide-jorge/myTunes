@@ -1,5 +1,6 @@
 package dk.easv.mytunes.be;
 
+// Class Playlist of the Business Entity package sets and defines the Playlist
 public class Playlist {
     private int id;
     private String name;

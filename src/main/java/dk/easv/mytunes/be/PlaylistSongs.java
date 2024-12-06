@@ -1,5 +1,6 @@
 package dk.easv.mytunes.be;
 
+// Class PlaylistSongs of the Business Entity (be) package determines the PlaylistSongs characteristics
 public class PlaylistSongs {
     private int playlist_id;
     private int song_id;
