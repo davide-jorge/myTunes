@@ -12,9 +12,9 @@ import java.util.List;
 public class SongDAO {
     private DBConnection conn = new DBConnection();
 
-    // Method to get all songs from the database
-    public List<Song> getAllSongs() {
-        List<Song> Songs = new ArrayList<>();
+    // Method to collect songs from the database
+    public List<Song> getSongs() {
+        List<Song> songs = new ArrayList<>();
         try {
             Connection c = conn.getConnection();
             String sql = "SELECT * FROM Song";
@@ -28,11 +28,37 @@ public class SongDAO {
                 int duration = rs.getInt("duration");
                 String file_path = rs.getString("file_path");
                 Song song = new Song(id, title, artist_id, category, duration, file_path);
-                Songs.add(song);
+                songs.add(song);
             }
         }catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return Songs;
+        return songs;
+    }
+
+    public Song add(Song song) {
+        try {
+            Connection c = conn.getConnection();
+            String sql = "INSERT INTO Song (id, title) VALUES (?,?)";
+            PreparedStatement stmnt = c.prepareStatement(sql);
+            stmnt.setInt(1, song.getId());
+            stmnt.setString(2, song.getTitle());
+            stmnt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return song;
+    }
+
+    public void delete(Song song) {
+        try {
+            Connection c = conn.getConnection();
+            String sql = "DELETE FROM Song WHERE id=?";
+            PreparedStatement stmnt = c.prepareStatement(sql);
+            stmnt.setInt(1, song.getId());
+            stmnt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

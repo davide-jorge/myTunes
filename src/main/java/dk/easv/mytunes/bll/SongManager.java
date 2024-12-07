@@ -8,8 +8,8 @@ import java.util.List;
 public class SongManager {
     private final SongDAO songDAO = new SongDAO();
 
-    public List<Song> getAllSongs(){
-        List<Song> songs = songDAO.getAllSongs();
+    public List<Song> getSongs() {
+        List<Song> songs = songDAO.getSongs();
         return songs;
     }
 }

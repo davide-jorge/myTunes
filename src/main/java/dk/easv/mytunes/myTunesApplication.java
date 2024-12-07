@@ -1,3 +1,10 @@
+/**
+ * =======================================
+ * Compulsory Assignment #3 myTunes
+ * EASV CSe2024 Group 1 Int
+ * =======================================
+ */
+
 package dk.easv.mytunes;
 
 import javafx.application.Application;

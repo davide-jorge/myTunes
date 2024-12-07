@@ -8,8 +8,8 @@ import java.util.List;
 public class PlaylistManager {
     private final PlaylistDAO playlistDAO = new PlaylistDAO();
 
-    public List<Playlist> getAllPlaylists(){
-        List<Playlist> playlists = playlistDAO.getAllPlaylists();
+    public List<Playlist> getPlaylists(){
+        List<Playlist> playlists = playlistDAO.getPlaylists();
         return playlists;
     }
 }

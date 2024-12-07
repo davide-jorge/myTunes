@@ -7,13 +7,14 @@ import javafx.collections.ObservableList;
 
 public class SongModel {
     private final SongManager songManager = new SongManager();
-    private ObservableList<Song> songObservableList = FXCollections.observableArrayList();
+
+    private ObservableList<Song> songs = FXCollections.observableArrayList();
 
     public SongModel() {
-        songObservableList.setAll(songManager.getAllSongs());
+        songs.setAll(songManager.getSongs());
     }
 
-    public ObservableList<Song> getObservableSongList() {
-        return songObservableList;
+    public ObservableList<Song> getSongs() {
+        return songs;
     }
 }

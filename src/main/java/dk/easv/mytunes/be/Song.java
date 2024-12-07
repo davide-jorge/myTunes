@@ -67,5 +67,5 @@ public class Song {
     }
 
     @Override
-    public String toString() {return id + "\t" + title + "\t" + artist_id + "\t" + category + "\t" + "(" + duration + ")" + "\t" + file_path;}
+    public String toString() {return title + ", " + artist_id + "\t" + category + "\t" + "(" + duration + ")";}
 }

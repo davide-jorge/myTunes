@@ -7,13 +7,14 @@ import javafx.collections.ObservableList;
 
 public class PlaylistModel {
     private final PlaylistManager playlistManager = new PlaylistManager();
-    private ObservableList<Playlist> playlistObservableList = FXCollections.observableArrayList();
+
+    private ObservableList<Playlist> playlists = FXCollections.observableArrayList();
 
     public PlaylistModel() {
-        playlistObservableList.setAll(playlistManager.getAllPlaylists());
+        playlists.setAll(playlistManager.getPlaylists());
     }
 
-    public ObservableList<Playlist> getObservablePlaylistList() {
-        return playlistObservableList;
+    public ObservableList<Playlist> getPlaylists() {
+        return playlists;
     }
 }

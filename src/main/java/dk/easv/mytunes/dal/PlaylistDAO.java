@@ -13,7 +13,7 @@ public class PlaylistDAO {
     private DBConnection conn = new DBConnection();
 
     // Method to get all playlists from the database
-    public List<Playlist> getAllPlaylists() {
+    public List<Playlist> getPlaylists() {
         List<Playlist> Playlists = new ArrayList<>();
         try {
             Connection c = conn.getConnection();
