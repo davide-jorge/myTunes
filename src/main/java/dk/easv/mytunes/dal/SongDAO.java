@@ -17,17 +17,19 @@ public class SongDAO {
         List<Song> songs = new ArrayList<>();
         try {
             Connection c = conn.getConnection();
-            String sql = "SELECT * FROM Song";
+            String sql = "SELECT s.id, s.title, a.name AS artist_name, s.category, s.duration, s.file_path " +
+                    "FROM Song s " +
+                    "JOIN Artist a ON s.artist_id = a.id";
             PreparedStatement stmnt = c.prepareStatement(sql);
             ResultSet rs = stmnt.executeQuery();
             while (rs.next()) { //While there are rows
                 int id = rs.getInt("id");
                 String title = rs.getString("title");
-                int artist_id = rs.getInt("artist_id");
+                String artist_name = rs.getString("artist_name");
                 String category = rs.getString("category");
                 int duration = rs.getInt("duration");
                 String file_path = rs.getString("file_path");
-                Song song = new Song(id, title, artist_id, category, duration, file_path);
+                Song song = new Song(id, title, artist_name, category, duration, file_path);
                 songs.add(song);
             }
         }catch (SQLException e) {

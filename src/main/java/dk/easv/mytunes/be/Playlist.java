@@ -1,12 +1,9 @@
 package dk.easv.mytunes.be;
 
-import javafx.collections.ObservableList;
-
-// Class Playlist of the Business Entity package sets and defines the Playlist
+// Class Playlist of the business entity package (be) defines a Playlist
 public class Playlist {
     private int id;
     private String name;
-    private ObservableList<Song> songs;
     private int duration;
 
     public Playlist(int id, String name, int duration) {

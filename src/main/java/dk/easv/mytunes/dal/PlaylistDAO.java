@@ -14,7 +14,7 @@ public class PlaylistDAO {
 
     // Method to get all playlists from the database
     public List<Playlist> getPlaylists() {
-        List<Playlist> Playlists = new ArrayList<>();
+        List<Playlist> playlists = new ArrayList<>();
         try {
             Connection c = conn.getConnection();
             String sql = "SELECT * FROM Playlist";
@@ -25,11 +25,27 @@ public class PlaylistDAO {
                 String name = rs.getString("name");
                 int duration = rs.getInt("duration");
                 Playlist playlist = new Playlist(id, name, duration);
-                Playlists.add(playlist);
+                playlists.add(playlist);
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return Playlists;
+        return playlists;
+    }
+
+    public Playlist getPlaylistById(int playlistId) throws SQLException {
+        String sql = "SELECT id, name, duration FROM Playlist WHERE id = ?";
+        try {
+            Connection c = conn.getConnection();
+            PreparedStatement stmnt = c.prepareStatement(sql);
+            stmnt.setInt(1, playlistId);
+            ResultSet rs = stmnt.executeQuery();
+            if (rs.next()) {
+                return new Playlist(rs.getInt("id"), rs.getString("name"), rs.getInt("duration"));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null; // Return null if no playlist is found
     }
 }

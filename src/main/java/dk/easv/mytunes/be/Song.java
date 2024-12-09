@@ -1,18 +1,18 @@
 package dk.easv.mytunes.be;
 
-// Class Song of the Business Entity (be) package determines the Song characteristics
+// Class Song of the business entity package (be) defines a Song
 public class Song {
     private int id;
     private String title;
-    private int artist_id;
+    private String artist_name;
     private String category;
     private int duration;
     private String file_path;
 
-    public Song(int id, String title, int artist_id, String category, int duration, String file_path) {
+    public Song(int id, String title, String artist_name, String category, int duration, String file_path) {
         this.id = id;
         this.title = title;
-        this.artist_id = artist_id;
+        this.artist_name = artist_name;
         this.category = category;
         this.duration = duration;
         this.file_path = file_path;
@@ -34,12 +34,12 @@ public class Song {
         this.title = title;
     }
 
-    public int getArtist_id() {
-        return artist_id;
+    public String getArtist_name() {
+        return artist_name;
     }
 
-    public void setArtist_id(int artist_id) {
-        this.artist_id = artist_id;
+    public void setArtist_name(String artist_name) {
+        this.artist_name = artist_name;
     }
 
     public String getCategory() {
@@ -67,5 +67,5 @@ public class Song {
     }
 
     @Override
-    public String toString() {return title + ", " + artist_id + "\t" + category + "\t" + "(" + duration + ")";}
+    public String toString() {return title + ", " + artist_name + ", " + category + " " + "(" + duration + ")";}
 }

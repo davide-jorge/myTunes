@@ -1,31 +1,33 @@
 package dk.easv.mytunes.be;
 
-// Class PlaylistSongs of the Business Entity (be) package determines the PlaylistSongs characteristics
+// Class PlaylistSongs of the business entity package (be) defines the PlaylistSongs collection
 public class PlaylistSongs {
-    private int playlist_id;
-    private int song_id;
+    private int index; // Number of the song in the user selected playlist
+    private String title;
 
-    public PlaylistSongs(int playlist_id, int song_id) {
-        this.playlist_id = playlist_id;
-        this.song_id = song_id;
+    public PlaylistSongs(int index, String title) {
+        this.index = index;
+        this.title = title;
     }
 
-    public int getPlaylist_id() {
-        return playlist_id;
+    public int getIndex() {
+        return index;
     }
 
-    public void setPlaylist_id(int playlist_id) {
-        this.playlist_id = playlist_id;
+    public void setIndex(int index) {
+        this.index = index;
     }
 
-    public int getSong_id() {
-        return song_id;
+    public String getTitle() {
+        return title;
     }
 
-    public void setSong_id(int song_id) {
-        this.song_id = song_id;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @Override
-    public String toString() {return playlist_id + "\t" + song_id;}
+    public String toString() {
+        return index + ". " + title; // Format: 1. Song title
+    }
 }
