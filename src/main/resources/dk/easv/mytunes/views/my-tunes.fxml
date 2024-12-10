@@ -32,6 +32,9 @@
       <ListView fx:id="lstPlaylistSongs" layoutX="229.0" layoutY="200.0" prefHeight="340.0" prefWidth="200.0" />
       <Label layoutX="444.0" layoutY="175.0" text="Songs" />
       <ListView fx:id="lstSongs" layoutX="444.0" layoutY="200.0" prefHeight="340.0" prefWidth="340.0" />
+      <Button fx:id="btnAddSong" layoutX="444.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Add Song" />
+      <Button fx:id="btnEditSong" layoutX="499.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Edit Song" />
+      <Button fx:id="btnDeleteSong" layoutX="554.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Delete Song" />
       <!--
       <Button layoutX="14.0" layoutY="550.0" mnemonicParsing="false" onAction="#onNewPlaylistClick" prefHeight="25.0" prefWidth="50.0" text="New Playlist" />
       <Button layoutX="69.0" layoutY="550.0" mnemonicParsing="false" onAction="#onEditPlaylistClick" prefHeight="25.0" prefWidth="50.0" text="Edit Playlist" />
@@ -39,9 +42,6 @@
       <Button layoutX="229.0" layoutY="550.0" mnemonicParsing="false" onAction="#onUpClick" prefHeight="25.0" prefWidth="50.0" text="Up" />
       <Button layoutX="284.0" layoutY="550.0" mnemonicParsing="false" onAction="#onDownClick" prefHeight="25.0" prefWidth="50.0" text="Down" />
       <Button layoutX="339.0" layoutY="550.0" mnemonicParsing="false" onAction="#onDeleteSongFromPlaylistClick" prefHeight="25.0" prefWidth="50.0" text="Delete from Playlist" />
-      <Button layoutX="444.0" layoutY="550.0" mnemonicParsing="false" onAction="#onAddSongClick" prefHeight="25.0" prefWidth="50.0" text="Add Song" />
-      <Button layoutX="499.0" layoutY="550.0" mnemonicParsing="false" onAction="#onEditSongClick" prefHeight="25.0" prefWidth="50.0" text="Edit Song" />
-      <Button layoutX="554.0" layoutY="550.0" mnemonicParsing="false" onAction="#onDeleteSongClick" prefHeight="25.0" prefWidth="50.0" text="Delete Song" />
       <Button layoutX="684.0" layoutY="550.0" mnemonicParsing="false" onAction="#onLoadSongsClick" prefHeight="25.0" prefWidth="100.0" text="Load Songs" />
       -->
    </children>

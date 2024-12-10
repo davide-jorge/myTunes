@@ -4,10 +4,15 @@ package dk.easv.mytunes.be;
 public class PlaylistSongs {
     private int index; // Number of the song in the user selected playlist
     private String title;
+    private Song song;
 
     public PlaylistSongs(int index, String title) {
         this.index = index;
         this.title = title;
+    }
+
+    public PlaylistSongs(Song song) {
+        this.song = song;
     }
 
     public int getIndex() {
@@ -24,6 +29,14 @@ public class PlaylistSongs {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Song getSong() {
+        return song;
+    }
+
+    public void setSong(Song song) {
+        this.song = song;
     }
 
     @Override
