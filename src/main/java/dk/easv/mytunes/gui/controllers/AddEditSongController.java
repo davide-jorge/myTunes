@@ -1,39 +1,54 @@
 package dk.easv.mytunes.gui.controllers;
 
+import dk.easv.mytunes.be.Artist;
 import dk.easv.mytunes.be.Song;
+import dk.easv.mytunes.dal.ArtistDAO;
 import dk.easv.mytunes.dal.SongDAO;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
+import java.util.List;
 
 public class AddEditSongController {
-    @FXML private TextField titleField, artistField, genreField;;
-    @FXML private Button saveButton, cancelButton;
+    @FXML private TextField titleField, artistField, genreField, durationField;
+    @FXML private Button selectFileButton, saveButton, cancelButton;
+    @FXML private ComboBox<Artist> artistComboBox;
 
-    private SongDAO songDAO = new SongDAO();
+    private ArtistDAO artistDAO = new ArtistDAO();
+
+    private SongDAO songDAO;
     private Song songToEdit;
+    private String filePath;
 
-    // Method to initialize the dialog (used for editing as well)
-    public void initialize(Song song) {
-        if (song != null) {
-            // If editing, populate the fields with the song data
-            songToEdit = song;
-            titleField.setText(song.getTitle());
-            artistField.setText(song.getArtist_name());
-            genreField.setText(song.getCategory());
+    public AddEditSongController() {
+        this.songDAO = new SongDAO();
+    }
+
+    // Method to initialize the dialog
+    public void initialize(Song songToEdit) {
+        List<Artist> artists = artistDAO.getArtists(); // Fetch the list of artists from the database
+        artistComboBox.setItems(FXCollections.observableList(artists)); // Populate the ComboBox with the existing artists
+        this.songToEdit = songToEdit;
+        if (songToEdit != null) {
+            titleField.setText(songToEdit.getTitle());
+            Artist selectedArtist = artists.stream()
+                    .filter(artist -> artist.getName().equals(songToEdit.getArtist_name()))
+                    .findFirst()
+                    .orElse(null);
+            artistComboBox.setValue(selectedArtist);
+            artistField.setText(songToEdit.getArtist_name());
+            genreField.setText(songToEdit.getCategory());
+            durationField.setText(String.valueOf(songToEdit.getDuration()));
+            filePath = songToEdit.getFile_path();
         }
     }
 
     @FXML
     private void chooseFile() {
-        // Ensure songToEdit is not null, if adding a new song, create a new Song object
-        if (songToEdit == null) {
-            songToEdit = new Song(0, "", "", "", 0, ""); // Create a new song with default values
-        }
-
         // Use FileChooser to select an audio file
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Audio Files", "*.mp3", "*.wav"));
@@ -41,28 +56,34 @@ public class AddEditSongController {
 
         if (file != null) {
             // Set the file path in the song object
-            songToEdit.setFile_path(file.getAbsolutePath()); // Use the full path, not just the file name
+            filePath = file.getName(); // Store the file name, without directory path
         }
     }
 
     @FXML
     private void saveSong() {
-        // Validate input
-        if (titleField.getText().isEmpty() || artistField.getText().isEmpty() || genreField.getText().isEmpty()) {
-            showAlert("Error", "All fields must be filled.");
+        String title = titleField.getText();
+        String artist = artistField.getText();
+        String genre = genreField.getText();
+        int duration = Integer.parseInt(durationField.getText());
+
+        if (title.isEmpty() || artist.isEmpty() || genre.isEmpty() || duration <= 0 || filePath == null) {
+            showAlert("Invalid Input", "Please fill in all fields and select an audio file.");
             return;
         }
 
-        if (songToEdit == null) {
-            songToEdit = new Song(0, titleField.getText(), artistField.getText(), genreField.getText(), 0, songToEdit.getFile_path());
-            songDAO.addSong(songToEdit);  // Add the song to the database
-        } else {
-            songToEdit.setTitle(titleField.getText());
-            songToEdit.setArtist_name(artistField.getText());
-            songToEdit.setCategory(genreField.getText());
-            songDAO.updateSong(songToEdit);  // Update the song in the database
+        Song newSong = new Song(songToEdit != null ? songToEdit.getId() : 0, title, artist, genre, duration, filePath);
+
+        try {
+            if (songToEdit != null) {
+                songDAO.updateSong(newSong);
+            } else {
+                songDAO.addSong(newSong);
+            }
+            closeDialog();
+        } catch (Exception e) {
+            showAlert("Error", "Failed to save song.");
         }
-        closeDialog();
     }
 
     private void showAlert(String title, String message) {
@@ -73,13 +94,13 @@ public class AddEditSongController {
         alert.showAndWait();
     }
 
-    public void handleCancel() {
-        Stage stage = (Stage) cancelButton.getScene().getWindow();
-        stage.close(); // Close the dialog without saving changes
+    @FXML
+    private void handleCancel() {
+        closeDialog();
     }
 
     private void closeDialog() {
-        Stage stage = (Stage) titleField.getScene().getWindow();
+        Stage stage = (Stage) saveButton.getScene().getWindow();
         stage.close();
     }
 }

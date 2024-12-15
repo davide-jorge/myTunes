@@ -12,22 +12,6 @@ import java.util.List;
 public class ArtistDAO {
     private DBConnection conn = new DBConnection();
 
-    public Artist getArtistById(int artistId) throws SQLException {
-        String sql = "SELECT id, name FROM Artist WHERE id = ?";
-        try {
-            Connection c = conn.getConnection();
-            PreparedStatement stmnt = c.prepareStatement(sql);
-            stmnt.setInt(1, artistId);
-            ResultSet rs = stmnt.executeQuery();
-            if (rs.next()) {
-                return new Artist(rs.getInt("id"), rs.getString("name"));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        return null; // Return null if no artist is found
-    }
-
     // Method to collect artists from the database
     public List<Artist> getArtists() {
         List<Artist> artists = new ArrayList<>();
@@ -46,5 +30,18 @@ public class ArtistDAO {
             throw new RuntimeException(e);
         }
         return artists;
+    }
+
+    // Method to add a new artist to the database
+    public void addArtist(Artist artist) {
+        try {
+            Connection c = conn.getConnection();
+            String sql = "INSERT INTO Artist (name) VALUES (?)";
+            PreparedStatement stmnt = c.prepareStatement(sql);
+            stmnt.setString(1, artist.getName());
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

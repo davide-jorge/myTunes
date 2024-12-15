@@ -33,19 +33,42 @@ public class PlaylistDAO {
         return playlists;
     }
 
-    public Playlist getPlaylistById(int playlistId) throws SQLException {
-        String sql = "SELECT id, name, duration FROM Playlist WHERE id = ?";
+    public void addPlaylist(Playlist playlist) {
         try {
             Connection c = conn.getConnection();
+            String sql = "INSERT INTO Playlist (name, duration) VALUES (?, ?)";
             PreparedStatement stmnt = c.prepareStatement(sql);
-            stmnt.setInt(1, playlistId);
-            ResultSet rs = stmnt.executeQuery();
-            if (rs.next()) {
-                return new Playlist(rs.getInt("id"), rs.getString("name"), rs.getInt("duration"));
-            }
+            stmnt.setString(1, playlist.getName());
+            stmnt.setInt(2, playlist.getDuration());
+            stmnt.executeUpdate();
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        return null; // Return null if no playlist is found
+    }
+
+    public void updatePlaylist(Playlist playlist) {
+        try {
+            Connection c = conn.getConnection();
+            String sql = "UPDATE Playlist SET name = ?, duration = ? WHERE id = ?";
+            PreparedStatement stmnt = c.prepareStatement(sql);
+            stmnt.setString(1, playlist.getName());
+            stmnt.setInt(2, playlist.getDuration());
+            stmnt.setInt(3, playlist.getId());
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void deletePlaylist(Playlist playlist) {
+        try {
+            Connection c = conn.getConnection();
+            String sql = "DELETE FROM Playlist WHERE id = ?";
+            PreparedStatement stmnt = c.prepareStatement(sql);
+            stmnt.setInt(1, playlist.getId());
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

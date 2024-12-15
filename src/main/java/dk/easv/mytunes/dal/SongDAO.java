@@ -36,37 +36,27 @@ public class SongDAO {
     }
 
     // Method to add a new song to the database
-    public void addSong(Song song) {
-        try {
-            Connection c = conn.getConnection();
-            String sql = "INSERT INTO Song (title, artist_id, category, duration, file_path) VALUES (?, ?, ?, ?, ?)";
-            PreparedStatement stmnt = c.prepareStatement(sql);
+    public void addSong(Song song) throws SQLException {
+        String sql = "INSERT INTO Song (title, artist_id, category, duration, file_path) VALUES (?, ?, ?, ?, ?)";
+        try (Connection c = conn.getConnection(); PreparedStatement stmnt = c.prepareStatement(sql)) {
+            int artistId = getArtistId(song.getArtist_name()); // Get the artist id based on the artist name
             stmnt.setString(1, song.getTitle());
-            stmnt.setInt(2, getArtistId(song.getArtist_name()));
+            stmnt.setInt(2, artistId);
             stmnt.setString(3, song.getCategory());
-            stmnt.setInt(4, 0); // Duration is optional or calculated later
+            stmnt.setInt(4, song.getDuration());
             stmnt.setString(5, song.getFile_path());
             stmnt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new SQLException("Error adding song to database", e);
         }
     }
 
     // Method to update an existing song in the database
-    public void updateSong(Song song) {
-        try {
-            // Get the artist ID based on the artist name
+    public void updateSong(Song song) throws SQLException {
+        String sql = "UPDATE Song SET title = ?, artist_id = ?, category = ?, duration = ?, file_path = ? WHERE id = ?";
+        try (Connection c = conn.getConnection(); PreparedStatement stmnt = c.prepareStatement(sql)) {
             int artistId = getArtistId(song.getArtist_name());
-
-            // If the artist does not exist in the database, handle the error or add the artist
-            if (artistId == -1) {
-                artistId = addArtist(song.getArtist_name());
-            }
-
-            // Proceed with the update if the artist exists
-            Connection c = conn.getConnection();
-            String sql = "UPDATE Song SET title = ?, artist_id = ?, category = ?, duration = ?, file_path = ? WHERE id = ?";
-            PreparedStatement stmnt = c.prepareStatement(sql);
             stmnt.setString(1, song.getTitle());
             stmnt.setInt(2, artistId);
             stmnt.setString(3, song.getCategory());
@@ -76,56 +66,19 @@ public class SongDAO {
             stmnt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
+            throw new SQLException("Error updating song in database", e);
         }
     }
 
-    public int addArtist(String artistName) {
-        try {
-            String sql = "INSERT INTO Artist (name) VALUES (?)";
-            Connection c = conn.getConnection();
-            PreparedStatement stmnt = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            stmnt.setString(1, artistName);
-            stmnt.executeUpdate();
-
-            // Get the generated artist ID
-            ResultSet rs = stmnt.getGeneratedKeys();
-            if (rs.next()) {
-                return rs.getInt(1); // Return the generated artist ID
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return -1; // Return -1 if adding the artist fails
-    }
-
+    // Method to delete an existing song in the database
     public void deleteSong(Song song) throws SQLException {
-        // Remove song from all playlists it is associated with
-        removeSongFromPlaylists(song);
-
-        // Then delete the song from the Songs table
-        try (Connection conn = this.conn.getConnection()) {
-            String sql = "DELETE FROM Song WHERE id = ?";
-            try (PreparedStatement stmnt = conn.prepareStatement(sql)) {
-                stmnt.setInt(1, song.getId());
-                stmnt.executeUpdate(); // Execute the delete statement
-            }
+        String sql = "DELETE FROM Song WHERE id = ?";
+        try (Connection c = conn.getConnection(); PreparedStatement stmnt = c.prepareStatement(sql)) {
+            stmnt.setInt(1, song.getId());
+            stmnt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new SQLException("Error deleting song", e);
-        }
-    }
-
-    private void removeSongFromPlaylists(Song song) throws SQLException {
-        try (Connection conn = this.conn.getConnection()) {
-            // Remove song from PlaylistSongs table (if necessary)
-            String sql = "DELETE FROM PlaylistSongs WHERE song_id = ?";
-            try (PreparedStatement stmnt = conn.prepareStatement(sql)) {
-                stmnt.setInt(1, song.getId());
-                stmnt.executeUpdate(); // Remove song from any playlist it's associated with
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new SQLException("Error removing song from playlists", e);
+            throw new SQLException("Error deleting song from database", e);
         }
     }
 

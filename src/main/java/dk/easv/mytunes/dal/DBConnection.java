@@ -9,7 +9,7 @@ public class DBConnection {
     public Connection getConnection() throws SQLServerException {
         SQLServerDataSource ds;
         ds = new SQLServerDataSource();
-        ds.setDatabaseName("CSe2024_myTunes_G1int"); // Make this unique as names are shared on server
+        ds.setDatabaseName("CSe2024_myTunes_G1Int2"); // Make this unique as names are shared on server
         ds.setUser("CSe2024b_e_6"); // Use your own Username
         ds.setPassword("CSe2024bE6!24"); // Use your own Password
         ds.setServerName("EASV-DB4");

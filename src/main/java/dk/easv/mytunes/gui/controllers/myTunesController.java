@@ -3,6 +3,7 @@ package dk.easv.mytunes.gui.controllers;
 import dk.easv.mytunes.be.Song;
 import dk.easv.mytunes.be.Playlist;
 import dk.easv.mytunes.be.PlaylistSongs;
+import dk.easv.mytunes.dal.PlaylistDAO;
 import dk.easv.mytunes.dal.SongDAO;
 import dk.easv.mytunes.dal.PlaylistSongsDAO;
 import dk.easv.mytunes.gui.models.SongModel;
@@ -56,6 +57,9 @@ public class myTunesController implements Initializable {
     @FXML
     private Button btnAddSong, btnEditSong, btnDeleteSong;
 
+    @FXML
+    private Button btnNewPlaylist, btnEditPlaylist, btnDeletePlaylist;
+
     private MediaPlayer mediaPlayer;
     private List<Song> songs;
     private List<Playlist> playlists;
@@ -67,6 +71,7 @@ public class myTunesController implements Initializable {
     private PlaylistModel playlistModel = new PlaylistModel();
     private PlaylistSongsDAO playlistSongsDAO = new PlaylistSongsDAO();
     private SongDAO songDAO = new SongDAO();
+    private PlaylistDAO playlistDAO = new PlaylistDAO();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -125,7 +130,7 @@ public class myTunesController implements Initializable {
             }
         });
 
-        // Add button actions
+        // Add, edit or delete song button actions
         btnAddSong.setOnAction(event -> openAddEditSongs(null));
         btnEditSong.setOnAction(event -> {
             Song selectedSong = lstSongs.getSelectionModel().getSelectedItem();
@@ -134,6 +139,16 @@ public class myTunesController implements Initializable {
             }
         });
         btnDeleteSong.setOnAction(event -> deleteSong());
+
+        // Add, edit or delete playlist button actions
+        btnNewPlaylist.setOnAction(event -> openAddEditPlaylist(null));  // New Playlist
+        btnEditPlaylist.setOnAction(event -> {
+            Playlist selectedPlaylist = lstPlaylists.getSelectionModel().getSelectedItem();
+            if (selectedPlaylist != null) {
+                openAddEditPlaylist(selectedPlaylist);  // Edit Playlist
+            }
+        });
+        btnDeletePlaylist.setOnAction(event -> deletePlaylist());  // Delete Playlist
     }
 
     private void openAddEditSongs(Song songToEdit) {
@@ -143,30 +158,132 @@ public class myTunesController implements Initializable {
             Parent root = loader.load();
             AddEditSongController dialogController = loader.getController();
             if (songToEdit != null) {
-                dialogController.initialize(songToEdit); // Pass existing song details for editing
+                dialogController.initialize(songToEdit); // Pass the existing song details if editing
             }
             Stage stage = new Stage();
             stage.setTitle(songToEdit == null ? "Add Song" : "Edit Song");
             stage.setScene(new Scene(root));
-            stage.show();
+            stage.showAndWait();
+            // After the dialog is closed, refresh the ListView to reflect changes
+            refreshSongList();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void refreshSongList() {
+        songs.clear();
+        songs.addAll(songDAO.getSongs());  // Reload the songs from the database
+        lstSongs.setItems(FXCollections.observableList(songs));
+    }
+
+    private void addSong(Song song) {
+        try {
+            songDAO.addSong(song); // Add song to the database
+            songs.add(song); // Add song to the ListView
+            lstSongs.getItems().add(song); // Update ListView
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Error adding song", "There was an issue adding the song.");
+        }
+    }
+
+    private void editSong(Song editedSong) {
+        try {
+            songDAO.updateSong(editedSong); // Update the song in the database
+            lstSongs.getItems().set(lstSongs.getSelectionModel().getSelectedIndex(), editedSong); // Update the ListView
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showError("Error updating song", "There was an issue updating the song.");
         }
     }
 
     private void deleteSong() {
         Song selectedSong = lstSongs.getSelectionModel().getSelectedItem();
         if (selectedSong != null) {
-            try {
-                songDAO.deleteSong(selectedSong); // Call the deleteSong method from SongDAO
-                songs.remove(selectedSong); // Remove the song from the ObservableList
-                lstSongs.getItems().remove(selectedSong); // Update ListView
-            } catch (SQLException e) {
-                e.printStackTrace();
-                showError("Error deleting song", "There was an issue deleting the selected song.");
-            }
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Song");
+            alert.setHeaderText("Are you sure you want to delete this song?");
+            alert.setContentText(selectedSong.getTitle());
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    try {
+                        songDAO.deleteSong(selectedSong); // Delete the song from the database
+                        songs.remove(selectedSong); // Remove the song from the ObservableList and ListView
+                        lstSongs.getItems().remove(selectedSong);
+                        lstSongs.setItems(FXCollections.observableList(songs)); // Refresh the entire ListView
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                        showError("Error deleting song", "There was an issue deleting the selected song.");
+                    }
+                }
+            });
         } else {
             showError("No song selected", "Please select a song to delete.");
+        }
+    }
+
+    private void openAddEditPlaylist(Playlist playlistToEdit) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/add-edit-playlists.fxml"));
+            Parent root = loader.load();
+            AddEditPlaylistController dialogController = loader.getController();
+            if (playlistToEdit != null) {
+                dialogController.initialize(playlistToEdit); // Pass existing playlist details if editing
+            }
+            Stage stage = new Stage();
+            stage.setTitle(playlistToEdit == null ? "New Playlist" : "Edit Playlist");
+            stage.setScene(new Scene(root));
+            stage.showAndWait();
+            refreshPlaylistList();  // Refresh playlist list after dialog is closed
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void refreshPlaylistList() {
+        playlists.clear();
+        playlists.addAll(playlistDAO.getPlaylists());  // Reload playlists from the database
+        lstPlaylists.setItems(FXCollections.observableList(playlists));
+    }
+
+    private void addPlaylist(Playlist playlist) {
+        try {
+            // Save the playlist to the database
+            playlistDAO.addPlaylist(playlist);
+
+            // Add the new playlist to the ObservableList and ListView
+            playlists.add(playlist);
+            lstPlaylists.setItems(FXCollections.observableList(playlists)); // Update ListView
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showError("Error adding playlist", "There was an issue adding the playlist.");
+        }
+    }
+
+    private void deletePlaylist() {
+        Playlist selectedPlaylist = lstPlaylists.getSelectionModel().getSelectedItem();
+        if (selectedPlaylist != null) {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete Playlist");
+            alert.setHeaderText("Are you sure you want to delete this playlist?");
+            alert.setContentText(selectedPlaylist.getName());
+            alert.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    try {
+                        playlistDAO.deletePlaylist(selectedPlaylist);
+                        playlists.remove(selectedPlaylist);
+                        lstPlaylists.getItems().remove(selectedPlaylist);
+                        lstPlaylists.setItems(FXCollections.observableList(playlists));
+                    } catch (Exception e) { // Catch a general exception
+                        e.printStackTrace();
+                        showError("Error deleting playlist", "There was an issue deleting the playlist.");
+                    }
+                }
+            });
+        } else {
+            showError("No playlist selected", "Please select a playlist to delete.");
         }
     }
 
