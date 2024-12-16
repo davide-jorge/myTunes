@@ -30,6 +30,7 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class myTunesController implements Initializable {
 
@@ -44,6 +45,9 @@ public class myTunesController implements Initializable {
 
     @FXML
     private Button playButton, pauseButton, stopButton, skipBackwardsButton, skipForwardsButton;
+
+    @FXML
+    private TextField txtFilter;
 
     @FXML
     private ListView<Song> lstSongs;
@@ -118,6 +122,11 @@ public class myTunesController implements Initializable {
             }
         });
 
+        // Initialize filter functionality
+        txtFilter.textProperty().addListener((observable, oldValue, newValue) -> {
+            filterSongs(newValue);
+        });
+
         playButton.setOnAction(event -> playMedia());
         pauseButton.setOnAction(event -> pauseMedia());
         stopButton.setOnAction(event -> stopMedia());
@@ -149,6 +158,21 @@ public class myTunesController implements Initializable {
             }
         });
         btnDeletePlaylist.setOnAction(event -> deletePlaylist());  // Delete Playlist
+    }
+
+    private void filterSongs(String filterText) {
+        // If the filter text is empty, show all songs
+        if (filterText == null || filterText.isEmpty()) {
+            lstSongs.setItems(FXCollections.observableList(songs));
+        } else {
+            // Filter the songs based on the title
+            List<Song> filteredSongs = songs.stream()
+                    .filter(song -> song.getTitle().toLowerCase().contains(filterText.toLowerCase()))
+                    .collect(Collectors.toList());
+
+            // Update the ListView with the filtered list
+            lstSongs.setItems(FXCollections.observableList(filteredSongs));
+        }
     }
 
     private void openAddEditSongs(Song songToEdit) {
