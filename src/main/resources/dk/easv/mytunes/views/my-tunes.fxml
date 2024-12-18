@@ -38,11 +38,7 @@
       <Button fx:id="btnNewPlaylist" layoutX="14.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="New Playlist" />
       <Button fx:id="btnEditPlaylist" layoutX="69.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Edit Playlist" />
       <Button fx:id="btnDeletePlaylist" layoutX="124.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="50.0" text="Delete Playlist" />
-      <!--
-      <Button layoutX="229.0" layoutY="550.0" mnemonicParsing="false" onAction="#onUpClick" prefHeight="25.0" prefWidth="50.0" text="Up" />
-      <Button layoutX="284.0" layoutY="550.0" mnemonicParsing="false" onAction="#onDownClick" prefHeight="25.0" prefWidth="50.0" text="Down" />
-      <Button layoutX="339.0" layoutY="550.0" mnemonicParsing="false" onAction="#onDeleteSongFromPlaylistClick" prefHeight="25.0" prefWidth="50.0" text="Delete from Playlist" />
-      <Button layoutX="684.0" layoutY="550.0" mnemonicParsing="false" onAction="#onLoadSongsClick" prefHeight="25.0" prefWidth="100.0" text="Load Songs" />
-      -->
+      <Button fx:id="btnAddToPlaylist" layoutX="229.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Add song to Playlist" />
+      <Button fx:id="btnDeleteFromPlaylist" layoutX="314.0" layoutY="550.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="Delete from Playlist" />
    </children>
 </AnchorPane>

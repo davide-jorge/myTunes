@@ -64,12 +64,14 @@ public class myTunesController implements Initializable {
     @FXML
     private Button btnNewPlaylist, btnEditPlaylist, btnDeletePlaylist;
 
+    @FXML
+    private Button btnAddToPlaylist, btnDeleteFromPlaylist;
+
     private MediaPlayer mediaPlayer;
     private List<Song> songs;
     private List<Playlist> playlists;
     private Song currentSong;
     private Playlist currentPlaylist;
-
     private SongModel songModel = new SongModel();
     private ArtistModel artistModel = new ArtistModel();
     private PlaylistModel playlistModel = new PlaylistModel();
@@ -79,7 +81,7 @@ public class myTunesController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Load Songs and Playlists
+        // Load songs and playlists
         songs = songModel.getSongs();
         playlists = playlistModel.getPlaylists();
         lstSongs.getItems().addAll(songs);
@@ -112,7 +114,6 @@ public class myTunesController implements Initializable {
                 if (newValue != null) {
                     // Find the corresponding Song object for the selected PlaylistSong
                     Song selectedSong = findSongByTitle(newValue.getTitle());
-                    ;
                     if (selectedSong != null) {
                         currentSong = selectedSong; // Update the current song
                         loadMedia();
@@ -122,11 +123,12 @@ public class myTunesController implements Initializable {
             }
         });
 
-        // Initialize filter functionality
+        // Initialize Filter functionality
         txtFilter.textProperty().addListener((observable, oldValue, newValue) -> {
             filterSongs(newValue);
         });
 
+        // Media Player button actions
         playButton.setOnAction(event -> playMedia());
         pauseButton.setOnAction(event -> pauseMedia());
         stopButton.setOnAction(event -> stopMedia());
@@ -139,7 +141,7 @@ public class myTunesController implements Initializable {
             }
         });
 
-        // Add, edit or delete song button actions
+        // Add, Edit or Delete Song button actions
         btnAddSong.setOnAction(event -> openAddEditSongs(null));
         btnEditSong.setOnAction(event -> {
             Song selectedSong = lstSongs.getSelectionModel().getSelectedItem();
@@ -149,15 +151,18 @@ public class myTunesController implements Initializable {
         });
         btnDeleteSong.setOnAction(event -> deleteSong());
 
-        // Add, edit or delete playlist button actions
-        btnNewPlaylist.setOnAction(event -> openAddEditPlaylist(null));  // New Playlist
+        // Add, Edit or Delete Playlist button actions
+        btnNewPlaylist.setOnAction(event -> openAddEditPlaylist(null)); // New Playlist
         btnEditPlaylist.setOnAction(event -> {
             Playlist selectedPlaylist = lstPlaylists.getSelectionModel().getSelectedItem();
             if (selectedPlaylist != null) {
-                openAddEditPlaylist(selectedPlaylist);  // Edit Playlist
+                openAddEditPlaylist(selectedPlaylist); // Edit Playlist
             }
         });
-        btnDeletePlaylist.setOnAction(event -> deletePlaylist());  // Delete Playlist
+        btnDeletePlaylist.setOnAction(event -> deletePlaylist()); // Delete Playlist
+
+        // Add or Delete Song from Playlist button actions
+        // btnAddToPlaylist.setOnAction(event -> addSongToPlaylist());
     }
 
     private void filterSongs(String filterText) {
@@ -176,7 +181,7 @@ public class myTunesController implements Initializable {
     }
 
     private void openAddEditSongs(Song songToEdit) {
-        // Open the dialog to add or edit a song
+        // Open the dialog to Add or Edit a song
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/dk/easv/mytunes/views/add-edit-songs.fxml"));
             Parent root = loader.load();
