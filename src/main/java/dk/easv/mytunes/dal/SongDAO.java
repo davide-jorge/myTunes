@@ -40,6 +40,11 @@ public class SongDAO {
         String sql = "INSERT INTO Song (title, artist_id, category, duration, file_path) VALUES (?, ?, ?, ?, ?)";
         try (Connection c = conn.getConnection(); PreparedStatement stmnt = c.prepareStatement(sql)) {
             int artistId = getArtistId(song.getArtist_name()); // Get the artist id based on the artist name
+            if (artistId == -1) { // Assuming -1 means artist doesn't exist
+                // Insert the artist first
+                insertArtist(song.getArtist_name());
+                artistId = getArtistId(song.getArtist_name()); // Retrieve the newly inserted artist's id
+            }
             stmnt.setString(1, song.getTitle());
             stmnt.setInt(2, artistId);
             stmnt.setString(3, song.getCategory());
@@ -49,6 +54,14 @@ public class SongDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new SQLException("Error adding song to database", e);
+        }
+    }
+
+    private void insertArtist(String artistName) throws SQLException {
+        String sql = "INSERT INTO Artist (name) VALUES (?)";
+        try (Connection c = conn.getConnection(); PreparedStatement stmnt = c.prepareStatement(sql)) {
+            stmnt.setString(1, artistName);
+            stmnt.executeUpdate();
         }
     }
 
