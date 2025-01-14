@@ -32,15 +32,26 @@ public class AddEditSongController {
     public void initialize(Song songToEdit) {
         List<Artist> artists = artistDAO.getArtists(); // Fetch the list of artists from the database
         artistComboBox.setItems(FXCollections.observableList(artists)); // Populate the ComboBox with the existing artists
-        this.songToEdit = songToEdit;
+        artistComboBox.setCellFactory(param -> new ListCell<Artist>() {
+            @Override
+            protected void updateItem(Artist artist, boolean empty) {
+                super.updateItem(artist, empty);
+                if (artist != null) {
+                    setText(artist.getName());
+                } else {
+                    setText(null);
+                }
+            }
+        });
+
+        // Handle default selection if editing an existing song
         if (songToEdit != null) {
             titleField.setText(songToEdit.getTitle());
             Artist selectedArtist = artists.stream()
                     .filter(artist -> artist.getName().equals(songToEdit.getArtist_name()))
                     .findFirst()
                     .orElse(null);
-            artistComboBox.setValue(selectedArtist);
-            artistField.setText(songToEdit.getArtist_name());
+            artistComboBox.setValue(selectedArtist);  // Set the artist combo box value to the selected artist
             genreField.setText(songToEdit.getCategory());
             durationField.setText(String.valueOf(songToEdit.getDuration()));
             filePath = songToEdit.getFile_path();
@@ -63,16 +74,29 @@ public class AddEditSongController {
     @FXML
     private void saveSong() {
         String title = titleField.getText();
-        String artist = artistField.getText();
+        String artist = artistField.getText();  // The user can type the artist here
         String genre = genreField.getText();
         int duration = Integer.parseInt(durationField.getText());
 
-        if (title.isEmpty() || artist.isEmpty() || genre.isEmpty() || duration <= 0 || filePath == null) {
+        if (title.isEmpty() || (artist.isEmpty() && artistComboBox.getSelectionModel().isEmpty()) || genre.isEmpty() || duration <= 0 || filePath == null) {
             showAlert("Invalid Input", "Please fill in all fields and select an audio file.");
             return;
         }
 
-        Song newSong = new Song(songToEdit != null ? songToEdit.getId() : 0, title, artist, genre, duration, filePath);
+        if (artist.isEmpty() && artistComboBox.getSelectionModel().getSelectedItem() == null) {
+            showAlert("Invalid Artist", "Please either select or enter a valid artist.");
+            return;
+        }
+
+        // If the artist field is empty but combo box has a selected artist, use the combo box value
+        Artist selectedArtist = artistComboBox.getSelectionModel().getSelectedItem();
+        if (selectedArtist == null && !artist.isEmpty()) {
+            // Artist is not in the combo box, so add it
+            artistDAO.addArtist(new Artist(0, artist)); // Add new artist
+            selectedArtist = new Artist(0, artist);  // Create a new Artist object with the entered name
+        }
+
+        Song newSong = new Song(songToEdit != null ? songToEdit.getId() : 0, title, selectedArtist.getName(), genre, duration, filePath);
 
         try {
             if (songToEdit != null) {

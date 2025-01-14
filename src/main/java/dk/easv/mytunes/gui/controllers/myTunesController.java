@@ -34,38 +34,17 @@ import java.util.stream.Collectors;
 
 public class myTunesController implements Initializable {
 
-    @FXML
-    private Label playingSongTitle;
-
-    @FXML
-    private ProgressBar songProgress;
-
-    @FXML
-    private Slider volumeSlider;
-
-    @FXML
-    private Button playButton, pauseButton, stopButton, skipBackwardsButton, skipForwardsButton;
-
-    @FXML
-    private TextField txtFilter;
-
-    @FXML
-    private ListView<Song> lstSongs;
-
-    @FXML
-    private ListView<Playlist> lstPlaylists;
-
-    @FXML
-    private ListView<PlaylistSongs> lstPlaylistSongs;
-
-    @FXML
-    private Button btnAddSong, btnEditSong, btnDeleteSong;
-
-    @FXML
-    private Button btnNewPlaylist, btnEditPlaylist, btnDeletePlaylist;
-
-    @FXML
-    private Button btnAddToPlaylist, btnDeleteFromPlaylist;
+    @FXML private Label playingSongTitle;
+    @FXML private ProgressBar songProgress;
+    @FXML private Slider volumeSlider;
+    @FXML private Button playButton, pauseButton, stopButton, skipBackwardsButton, skipForwardsButton;
+    @FXML private TextField txtFilter;
+    @FXML private ListView<Song> lstSongs;
+    @FXML private ListView<Playlist> lstPlaylists;
+    @FXML private ListView<PlaylistSongs> lstPlaylistSongs;
+    @FXML private Button btnAddSong, btnEditSong, btnDeleteSong;
+    @FXML private Button btnNewPlaylist, btnEditPlaylist, btnDeletePlaylist;
+    @FXML private Button btnAddToPlaylist, btnDeleteFromPlaylist;
 
     private MediaPlayer mediaPlayer;
     private List<Song> songs;
@@ -75,9 +54,9 @@ public class myTunesController implements Initializable {
     private SongModel songModel = new SongModel();
     private ArtistModel artistModel = new ArtistModel();
     private PlaylistModel playlistModel = new PlaylistModel();
-    private PlaylistSongsDAO playlistSongsDAO = new PlaylistSongsDAO();
     private SongDAO songDAO = new SongDAO();
     private PlaylistDAO playlistDAO = new PlaylistDAO();
+    private PlaylistSongsDAO playlistSongsDAO = new PlaylistSongsDAO();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
